@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hamrahpolice1/components/inputFieldArea.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:validators/validators.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +17,6 @@ class _SignUpState extends State<SignUp> {
   String _nationalCode;
   String _bornPlace;
   var _bornYear;
-
   String _username;
   String _password;
 
@@ -175,12 +175,9 @@ class _SignUpState extends State<SignUp> {
               padding: const EdgeInsets.only(bottom: 20),
               child: GestureDetector(
                   onTap: () {
-                    _formkey.currentState.save();
-                    print(_name);
-
                     if (_formkey.currentState.validate()) {
                       _formkey.currentState.save();
-                      // sendDataToServer();
+                      sendDataToServer();
                     }
                   },
                   child: Container(
@@ -210,28 +207,41 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future sendDataToServer() async {
-    final response = await http.post('url', body: {
+    final response = await http.post('http://127.0.0.1:8000/api/register', body: {
       'name': _name,
       'family': _family,
-      'nationalCode': _nationalCode,
-      'bornPlace': _bornPlace,
-      'bornYear': _bornYear,
+      'nationalcode': _nationalCode,
+      'bornplace': _bornPlace,
+      'bornyear': _bornYear,
       'email': _username,
       'password': _password
-    });
-    var responseBody = json.decode(response.body);
+    },headers: _setHeaders());
+    var responseBody = json.decode(utf8.decode(response.bodyBytes));
     if (response.statusCode == 201) {
       Navigator.of(context).pushNamed('/');
+      storeUserData(responseBody);
     } else {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text(
-            responseBody['data'],
+            'مشکلی پیش آمده!',
             style:
                 TextStyle(fontFamily: 'IranSans', fontWeight: FontWeight.w500),
           ),
         ),
       );
     }
+  }
+
+  _setHeaders() => {
+    // 'Content-type': 'application/json',
+    'type': 'bearer',
+    'Accept': 'application/json',
+    // 'Authorization' : 'Bearer $token'
+  };
+
+  storeUserData(Map userData) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user.api_token', userData['api_token']);
   }
 }

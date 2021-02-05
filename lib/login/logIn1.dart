@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hamrahpolice1/components/inputFieldArea.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:validators/validators.dart';
-import 'package:http/http.dart' as http;
 
 class LogIn1 extends StatefulWidget {
   @override
@@ -16,8 +16,8 @@ class LogIn1 extends StatefulWidget {
 
 class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
   // AnimationController _loginButtonController;
-  String _username;
-  String _password;
+  String _username ;
+  String _password ;
 
   onSaveUsername(String value) {
     _username = value;
@@ -119,12 +119,15 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         GestureDetector(
+
                             onTap: () {
-                              if (_formkey.currentState.validate()) {
-                                _formkey.currentState.save();
-                                Navigator.of(context).pushNamed('/signUp');
-                                // sendDataToServer();
-                              }
+                              Navigator.of(context).pushNamed('/');
+
+
+                              // if (_formkey.currentState.validate()) {
+                              //   _formkey.currentState.save();
+                              //   sendDataToServer();
+                              // }
                             },
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 10),
@@ -159,17 +162,24 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
   }
 
   Future sendDataToServer() async {
-    final response = await http
-        .post('url', body: {'email': _username, 'password': _password});
-    var responseBody = json.decode(response.body);
+    print('start http');
+    final response = await post('http://127.0.0.1:8000/api/login',
+        body: {'email': _username.toString(), 'password': _password.toString()},
+        headers: _setHeaders());
+
+    print('finish http');
+    var responseBody = json.decode(utf8.decode(response.bodyBytes));
+    // print(response.statusCode);
+    print(response.toString() + '***');
     if (response.statusCode == 200) {
-      storeUserData(responseBody['data']);
+      print(responseBody["token"]);
+      storeUserData(responseBody["token"]);
       Navigator.of(context).pushNamed('/');
     } else {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text(
-            responseBody['data'],
+            'وجود ندارد',
             style:
                 TextStyle(fontFamily: 'IranSans', fontWeight: FontWeight.w500),
           ),
@@ -178,10 +188,15 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
     }
   }
 
-  storeUserData(Map userData) async{
+  _setHeaders() => {
+        // 'Content-type': 'application/json',
+        'type': 'bearer',
+        'Accept': 'application/json',
+        // 'Authorization' : 'Bearer $token'
+      };
+
+  storeUserData(Map userData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('user.api_token', userData['api_token']);
-    await prefs.setString('user.user_id', userData['user_id']);
-
   }
 }

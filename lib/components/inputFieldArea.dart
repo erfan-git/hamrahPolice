@@ -23,7 +23,6 @@ class InputFieldArea extends StatelessWidget {
       //   ),
       // ),
       child: TextFormField(
-        // key: ,
         onSaved: onSaveValue,
         validator: validator,
         obscureText: obscure,

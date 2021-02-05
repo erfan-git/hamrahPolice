@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -9,6 +12,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   startTime() {
     var _duration = Duration(seconds: 1);
     //در ویجت تایمر دو ورودی میدهیم که اولی duration و دومی فانکشن کاری که قراره انجام بده است
@@ -17,7 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   navigationPage() {
-    Navigator.of(context).pushNamed('/login');
+    checkLogin();
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -156,25 +162,55 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            // Transform.translate(
-            //   offset: Offset(-100.0, 320.0),
-            //   child: Padding(
-            //     padding: const EdgeInsets.only(bottom: 30),
-            //     child: Align(
-            //       alignment: Alignment.bottomCenter,
-            //       child: CircularProgressIndicator(),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
     );
   }
 
-  checkLogin() async{
+  checkLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+    String apiToken = prefs.getString('user.api_token');
+    if(await checkConnectionInternet()){
+      await checkApiToken(apiToken)
+          ? Navigator.of(context).pushReplacementNamed('/')
+          : Navigator.of(context).pushReplacementNamed('/login');
+    }else{
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          duration: Duration(hours: 2),
 
+          content: GestureDetector(
+            onTap: (){
+              _scaffoldKey.currentState.hideCurrentSnackBar();
+              checkLogin();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'از اتصال دستگاه به اینترنت مطمئن شوید',
+                  style:
+                  TextStyle(fontFamily: 'IranSans', fontWeight: FontWeight.w500),
+                ),
+                Icon(Icons.signal_wifi_off,color: Colors.white,)
+              ],
+            ),
+          ),
+        ),
+      );
+
+    }
+  }
+
+  Future<bool> checkConnectionInternet() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    return (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi);
+  }
+
+  Future<bool> checkApiToken(String apiToken) async{
+    final response = await http.get('u?rl=${apiToken}',headers:{'type': 'bearer',} );
+    return response.statusCode == 200;
   }
 }
