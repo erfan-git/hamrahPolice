@@ -1,14 +1,32 @@
-import 'package:flutter/material.dart';
 
-class Root extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:hamrahpolice1/dialogs/new_report_dialog.dart';
+
+class Root extends StatefulWidget {
+  @override
+  _RootState createState() => _RootState();
+}
+
+class _RootState extends State<Root> {
+  final _scaffoldkey = GlobalKey<ScaffoldState>();
+
+  Future<void> showInformationDialog(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (_) {
+          return NewReportDialog();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return Scaffold(
+      key: _scaffoldkey,
+      resizeToAvoidBottomPadding: false,
       body: Container(
         child: Stack(
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           children: [
             Container(
               width: size.width,
@@ -19,6 +37,68 @@ class Root extends StatelessWidget {
                 ),
               ),
             ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 100,
+                ),
+                SizedBox(
+                  height: 100,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showInformationDialog(context);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    width: 240,
+                    height: 60,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      color: Colors.white,
+                    ),
+                    child: Text(
+                      'گزارش جدید',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        fontFamily: 'IranSans',
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // Navigator.of(context).pushNamed('/');
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    width: 240,
+                    height: 60,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      color: Colors.white,
+                    ),
+                    child: Text(
+                      'تاریخچه گزارشات',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        fontFamily: 'IranSans',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
