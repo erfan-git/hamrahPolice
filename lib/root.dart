@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hamrahpolice1/dialogs/list_of_reports.dart';
 import 'package:hamrahpolice1/dialogs/new_report_dialog.dart';
 
 class Root extends StatefulWidget {
@@ -15,6 +16,14 @@ class _RootState extends State<Root> {
         context: context,
         builder: (_) {
           return NewReportDialog();
+        });
+  }
+
+  Future<void> showListInformationDialog(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (_) {
+          return ReportList();
         });
   }
 
@@ -75,7 +84,7 @@ class _RootState extends State<Root> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Navigator.of(context).pushNamed('/');
+                    showListInformationDialog(context);
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
