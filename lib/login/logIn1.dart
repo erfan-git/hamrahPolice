@@ -16,8 +16,9 @@ class LogIn1 extends StatefulWidget {
 
 class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
   // AnimationController _loginButtonController;
-  String _username ;
-  String _password ;
+  String _username;
+
+  String _password;
 
   onSaveUsername(String value) {
     _username = value;
@@ -90,7 +91,7 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
                         ),
                         InputFieldArea(
                           validator: (String value) {
-                            if (value.length <= 8) {
+                            if (value.length <= 5) {
                               return "طول پسورد باید حداقل 8 کاراکتر باشد";
                             }
                           },
@@ -119,36 +120,33 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         GestureDetector(
-
-                            onTap: () {
-                              Navigator.of(context).pushNamed('/');
-
-
-                              // if (_formkey.currentState.validate()) {
-                              //   _formkey.currentState.save();
-                              //   sendDataToServer();
-                              // }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              width: 220,
-                              height: 60,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30)),
-                                color: Colors.white,
+                          onTap: () {
+                            if (_formkey.currentState.validate()) {
+                              _formkey.currentState.save();
+                              sendDataToServer();
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            width: 220,
+                            height: 60,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
+                              color: Colors.white,
+                            ),
+                            child: Text(
+                              'ورود',
+                              style: TextStyle(
+                                color: Colors.blue[900],
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                fontFamily: 'IranSans',
                               ),
-                              child: Text(
-                                'ورود',
-                                style: TextStyle(
-                                  color: Colors.blue[900],
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 20,
-                                  fontFamily: 'IranSans',
-                                ),
-                              ),
-                            ))
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -163,17 +161,16 @@ class _LogIn1State extends State<LogIn1> with SingleTickerProviderStateMixin {
 
   Future sendDataToServer() async {
     print('start http');
-    final response = await post('http://127.0.0.1:8000/api/login',
+    http.Response response = await post('http://10.0.2.2:8000/api/login',
         body: {'email': _username.toString(), 'password': _password.toString()},
-        headers: _setHeaders());
+        /*headers: _setHeaders()*/);
 
     print('finish http');
     var responseBody = json.decode(utf8.decode(response.bodyBytes));
-    // print(response.statusCode);
-    print(response.toString() + '***');
+    print(response.statusCode.toString() + '***');
     if (response.statusCode == 200) {
       print(responseBody["token"]);
-      storeUserData(responseBody["token"]);
+      // storeUserData(responseBody["token"]);
       Navigator.of(context).pushNamed('/');
     } else {
       _scaffoldKey.currentState.showSnackBar(

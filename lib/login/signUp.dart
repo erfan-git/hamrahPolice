@@ -207,19 +207,22 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future sendDataToServer() async {
-    final response = await http.post('http://127.0.0.1:8000/api/register', body: {
-      'name': _name,
-      'family': _family,
-      'nationalcode': _nationalCode,
-      'bornplace': _bornPlace,
-      'bornyear': _bornYear,
-      'email': _username,
-      'password': _password
-    },headers: _setHeaders());
+    // String json = '{"title": "Hello"}';
+    print('start******');
+    http.Response response = await http.post('http://10.0.2.2:8000/api/register', body: {
+      'email': _username.toString(),
+      'password': _password.toString(),
+      'name': _name.toString(),
+      'nationalcode': _nationalCode.toString(),
+      'bornyear': _bornYear.toString(),
+      'family': _family.toString(),
+      'bornplace': _bornPlace.toString(),
+    },/*headers: _setHeaders()*/);
+    print(response.statusCode);
     var responseBody = json.decode(utf8.decode(response.bodyBytes));
     if (response.statusCode == 201) {
       Navigator.of(context).pushNamed('/');
-      storeUserData(responseBody);
+      // storeUserData(responseBody);
     } else {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
@@ -232,13 +235,13 @@ class _SignUpState extends State<SignUp> {
       );
     }
   }
-
-  _setHeaders() => {
-    // 'Content-type': 'application/json',
-    'type': 'bearer',
-    'Accept': 'application/json',
-    // 'Authorization' : 'Bearer $token'
-  };
+  //
+  // _setHeaders() => {
+  //   'Content-type': 'application/json',
+  //   'type': 'bearer',
+  //   'Accept': 'application/json',
+  //   // 'Authorization' : 'Bearer $token'
+  // };
 
   storeUserData(Map userData) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -14,14 +14,6 @@ class InputFieldArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: margin),
-      // decoration: BoxDecoration(
-      //   border: Border(
-      //     bottom: BorderSide(
-      //       width: 0.9,
-      //       color: Colors.white30,
-      //     ),
-      //   ),
-      // ),
       child: TextFormField(
         onSaved: onSaveValue,
         validator: validator,
