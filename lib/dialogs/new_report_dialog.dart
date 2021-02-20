@@ -198,13 +198,19 @@ class _NewReportDialogState extends State<NewReportDialog> {
                                     fit: BoxFit.cover,
                                   ),
                                 )
-                              : Container(
-                                  width: 250,
-                                  height: 250,
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    size: 90,
-                                    color: Colors.blue[900],
+                              : GestureDetector(
+                                  onTap: () {
+                                    _displayCurrentLocation();
+                                    _showPicker(context);
+                                  },
+                                  child: Container(
+                                    width: 250,
+                                    height: 250,
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 90,
+                                      color: Colors.blue[900],
+                                    ),
                                   ),
                                 ),
                         ),
@@ -213,7 +219,6 @@ class _NewReportDialogState extends State<NewReportDialog> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).pushNamed('/');
                       _displayCurrentLocation();
                       _showPicker(context);
                     },
